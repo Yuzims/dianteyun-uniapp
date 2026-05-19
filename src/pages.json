@@ -1,0 +1,104 @@
+{
+  "pages": [
+    {
+      "path": "pages/home/index",
+      "style": {
+        "navigationBarTitleText": "首页"
+      }
+    },
+    {
+      "path": "pages/mais/index",
+      "style": {
+        "navigationBarTitleText": "选购"
+      }
+    },
+    {
+      "path": "pages/scar/index",
+      "style": {
+        "navigationBarTitleText": "购物车"
+      }
+    },
+    {
+      "path": "pages/va20/index",
+      "style": {
+        "navigationBarTitleText": "订单"
+      }
+    },
+    {
+      "path": "pages/user/index",
+      "style": {
+        "navigationBarTitleText": "我的"
+      }
+    },
+    {
+      "path": "pages/Logon/index",
+      "style": {
+        "navigationBarTitleText": "登录"
+      }
+    },
+    {
+      "path": "pages/Va03/index",
+      "style": {
+        "navigationBarTitleText": "订单详情"
+      }
+    },
+    {
+      "path": "pages/ma05/index",
+      "style": {
+        "navigationBarTitleText": "商品详情"
+      }
+    },
+    {
+      "path": "pages/vapc/index",
+      "style": {
+        "navigationBarTitleText": "下载图片"
+      }
+    },
+    {
+      "path": "pages/VI03/index",
+      "style": {
+        "navigationBarTitleText": "交货情况"
+      }
+    },
+    {
+      "path": "pages/va01/index",
+      "style": {
+        "navigationBarTitleText": "新建订单"
+      }
+    }
+  ],
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#1677ff",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/mais/index",
+        "text": "选购"
+      },
+      {
+        "pagePath": "pages/scar/index",
+        "text": "购物车"
+      },
+      {
+        "pagePath": "pages/va20/index",
+        "text": "订单"
+      },
+      {
+        "pagePath": "pages/user/index",
+        "text": "我的"
+      }
+    ]
+  },
+  "globalStyle": {
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#f7f8fa"
+  },
+  "subPackages": []
+}
