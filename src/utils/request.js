@@ -23,6 +23,18 @@ function normalizeResponse(res){
   const status = res.statusCode || (res[0] && res[0].status) || 0
   const body = res.data !== undefined ? res.data : res[1]
   if(status >= 200 && status < 300){
+    if(body && typeof body === 'object' && body.result && typeof body.result === 'object' && 'result' in body.result){
+      const resultFlag = String(body.result.result || '').toLowerCase()
+      const message = body.result.message || body.message || ''
+      const code = body.code === undefined ? status : body.code
+      if(resultFlag === 'error'){
+        const err = new Error(message || '请求失败')
+        err.code = code
+        err.raw = res
+        throw err
+      }
+      return { success: true, code, message, data: body }
+    }
     // Common backend structure support
     if(body && typeof body === 'object' && ('code' in body || 'data' in body)){
       const code = body.code === undefined ? status : body.code

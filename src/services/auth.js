@@ -33,6 +33,10 @@ export function removeToken(){
   try{ uni.removeStorageSync(API_CONFIG.TOKEN_KEY); uni.removeStorageSync(API_CONFIG.REFRESH_TOKEN_KEY) }catch(e){}
 }
 
+export function hasToken(){
+  return !!getToken()
+}
+
 export function initAuth(){
   const t = uni.getStorageSync(API_CONFIG.TOKEN_KEY)
   if(t) inMemoryToken = t
