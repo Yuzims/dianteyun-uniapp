@@ -1,19 +1,8 @@
-import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
-import Uni from '@uni-helper/plugin-uni'
-
+import uni from '@dcloudio/vite-plugin-uni'
+// https://vitejs.dev/config/
 export default defineConfig({
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  },
   plugins: [
-    // https://uni-helper.js.org/plugin-uni
-    Uni(),
+    uni(),
   ],
-  
 })
-
-
