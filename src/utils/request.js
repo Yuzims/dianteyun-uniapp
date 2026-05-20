@@ -4,8 +4,10 @@ import * as auth from '@/services/auth'
 function uniAdapter(opts){
   return new Promise((resolve, reject)=>{
     const headers = Object.assign({}, opts.headers || {})
+    // 如果调用方显示要求跳过鉴权或调用的是登录接口，则不自动添加 Authorization
+    const skipAuth = opts.skipAuth || (opts.url && String(opts.url).toLowerCase().includes('/dtylogin'))
     const token = auth.getToken()
-    if(token){ headers[API_CONFIG.TOKEN_HEADER] = `Bearer ${token}` }
+    if(!skipAuth && token){ headers[API_CONFIG.TOKEN_HEADER] = `Bearer ${token}` }
 
     uni.request({
       url: (opts.baseURL || API_CONFIG.BASE_URL) + (opts.url || ''),

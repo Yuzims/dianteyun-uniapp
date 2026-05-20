@@ -7,7 +7,7 @@ const loginMode = ref('buyer')
 const loading = ref(false)
 const smsSending = ref(false)
 const countdown = ref(0)
-const agreeTerms = ref(true)
+const agreeTerms = ref(false)
 
 const formData = reactive({
   mobile: '',
@@ -15,6 +15,20 @@ const formData = reactive({
   mandt: '',
   bname: '',
   password: ''
+})
+
+const isValidMobile = computed(() => {
+  const m = (formData.mobile || '').trim()
+  // 简单中国手机号校验：1开头，11位
+  return /^1[3-9]\d{9}$/.test(m)
+})
+
+const isCanSubmit = computed(() => {
+  if(isBuyerMode.value){
+    return isValidMobile.value && !!formData.smsCode.trim() && agreeTerms.value
+  }
+  // 商家模式沿用原有必填校验（稍宽松）
+  return !!formData.mandt.trim() && !!formData.bname.trim() && !!formData.password.trim()
 })
 
 const isBuyerMode = computed(() => loginMode.value === 'buyer')
@@ -82,6 +96,10 @@ async function sendSms(){
     toast('请先输入手机号')
     return
   }
+  if(!isValidMobile.value){
+    toast('请输入有效手机号')
+    return
+  }
 
   smsSending.value = true
   try{
@@ -96,15 +114,25 @@ async function sendSms(){
 }
 
 async function submitLogin(){
-  if(!agreeTerms.value){
-    toast('请先阅读并同意用户协议和隐私政策')
-    return
-  }
-
-  const validationMessage = isBuyerMode.value ? validateBuyerForm() : validateMerchantForm()
-  if(validationMessage){
-    toast(validationMessage)
-    return
+  if(isBuyerMode.value){
+    if(!formData.mobile.trim() || !isValidMobile.value){
+      toast('请输入有效手机号')
+      return
+    }
+    if(!formData.smsCode.trim()){
+      toast('请输入验证码')
+      return
+    }
+    if(!agreeTerms.value){
+      toast('请先阅读并同意用户协议和隐私政策')
+      return
+    }
+  }else{
+    const validationMessage = validateMerchantForm()
+    if(validationMessage){
+      toast(validationMessage)
+      return
+    }
   }
 
   loading.value = true
@@ -153,9 +181,20 @@ async function submitLogin(){
     const saved = !!getToken()
     toast(response?.message || result?.result?.message || (saved ? '登录成功' : '登录失败'))
     if(saved){
+      // 登录成功后存储手机号，后续接口请求会优先使用该手机号
+      try{
+        if(isBuyerMode.value && formData.mobile && formData.mobile.trim()){
+          uni.setStorageSync('mobile', formData.mobile.trim())
+        }
+      }catch(e){ /* ignore storage errors */ }
+
       setTimeout(() => {
-        // 选购页是 tabBar 页面，需要使用 switchTab
-        uni.switchTab({ url: '/pages/mais/index' })
+        uni.switchTab({
+          url: '/pages/va20/index',
+          fail: () => {
+            uni.reLaunch({ url: '/pages/va20/index' })
+          }
+        })
       }, 250)
     }
   }catch(err){
@@ -214,7 +253,7 @@ async function submitLogin(){
           </view>
         </template>
 
-        <button class="login-btn" :loading="loading" :disabled="loading" @tap="submitLogin">
+        <button class="login-btn" :class="{disabled: !isCanSubmit || loading}" :loading="loading" :disabled="loading" @tap="submitLogin">
           {{ submitText }}
         </button>
 
@@ -227,10 +266,13 @@ async function submitLogin(){
         </view>
 
         <view class="footer-links">
-          <text>登录/注册表示您同意</text>
-          <text class="link">《用户协议》</text>
-          <text>和</text>
-          <text class="link">《隐私政策》</text>
+          <view class="agree-row" @tap="agreeTerms = !agreeTerms">
+            <view class="checkbox" :class="{checked: agreeTerms}"></view>
+            <text class="agree-text">登录/注册表示您同意</text>
+            <text class="link">《用户协议》</text>
+            <text>和</text>
+            <text class="link">《隐私政策》</text>
+          </view>
         </view>
       </view>
     </view>
@@ -321,6 +363,14 @@ async function submitLogin(){
 
 .footer-links { margin-top:20rpx; color:#9aa6b3; font-size:22rpx; display:flex; align-items:center; justify-content:center; flex-wrap:wrap }
 .footer-links .link { color:#1e90ff; margin:0 6rpx }
+
+.agree-row { display:flex; align-items:center; gap:8rpx }
+.checkbox { width:28rpx; height:28rpx; border-radius:6rpx; border:1.5rpx solid #d7eaf8; background:#fff; box-sizing:border-box }
+.checkbox.checked { background:#1e90ff; border-color:#1e90ff }
+.checkbox.checked::after { content: ''; display:block; width:10rpx; height:6rpx; border-left:2rpx solid #fff; border-bottom:2rpx solid #fff; transform:translate(7rpx,8rpx) rotate(-45deg) }
+.agree-text { color:#9aa6b3; font-size:22rpx; margin-right:6rpx }
+
+.login-btn.disabled { background:#f3f6f8; border-color:#e6eef2; color:#9aa6b3 }
 
 @media (max-width: 720px) {
   .panel { margin: 0; border-radius: 0; box-shadow: none }

@@ -3,13 +3,14 @@ import request from '@/utils/request'
 // 通用登录接口：点特云小程序商家/买家登录
 // 参数参考：spras, ltype, mobile, smscode, mandt, bname, password
 export function dtyLogin(payload){
-  return request.post('/api/dtylogin', payload)
+  // 登录接口无需携带已存在的 Authorization header
+  return request.post('/api/dtylogin', payload, { skipAuth: true })
 }
 
 // 发送短信验证码
 // 参数参考：guiver, mobile
 export function dtySendSms(payload){
-  return request.post('/api/dtysendsms', payload)
+  return request.post('/api/dtysendsms', payload, { skipAuth: true })
 }
 
 export function getProfile(){
